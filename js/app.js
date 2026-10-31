@@ -42,11 +42,12 @@
   const parteVacia = () => ({
     denominacion: '', siglas: '', naturaleza: 'dependencia', fundNaturaleza: '', creacion: '',
     representante: '', cargo: '', nombramiento: '', fundFacultades: '', rfc: '', domicilio: '', correo: '',
-    enlace: '', aporta: false, suficiencia: '', compromisos: ''
+    enlace: '', unidadRiss: '', aporta: false, suficiencia: '', compromisos: ''
   });
 
   const estadoInicial = () => ({
-    tipo: 'colaboracion', qModifica: false, qDeriva: false, qMarco: false,
+    contraparte: '', finalidades: [], finalidadTexto: '', firmanteRiss: '',
+    tipo: 'colaboracion',
     materia: '', principal: '', principalFecha: '', modificaciones: '',
     antecedentes: '', objeto: '', conjuntos: '',
     recursos: 'no', monto: '', fuente: '', condiciones: '',
@@ -65,6 +66,12 @@
       e.partes[+x.aportante].aporta = true;
     }
     delete e.aportante;
+    // Borradores de la versión anterior: tres casillas en lugar de finalidades.
+    if (!Array.isArray(e.finalidades)) e.finalidades = [];
+    [['qModifica', 'modificar'], ['qDeriva', 'ejecutar'], ['qMarco', 'bases']].forEach(([q, fin]) => {
+      if (x[q] && !e.finalidades.includes(fin)) e.finalidades.push(fin);
+      delete e[q];
+    });
     return e;
   };
 
@@ -140,7 +147,9 @@
     $('#cat-editor').innerHTML = `<fieldset><legend>${f ? 'Editar ficha' : 'Nueva ficha'}</legend>${
       CAMPOS_FICHA.map(c => c.tipo === 'naturaleza'
         ? `<label>${c.etiqueta}<select data-f="naturaleza">${opts}</select></label>`
-        : `<label>${c.etiqueta}<input data-f="${c.k}" value="${esc(datos[c.k] || '')}" placeholder="${esc(c.ayuda || '')}"></label>`).join('')
+        : c.tipo === 'riss'
+          ? `<label>${c.etiqueta}<select data-f="unidadRiss"><option value="">No aplica</option>${opcionesRiss(datos.unidadRiss)}</select></label>`
+          : `<label>${c.etiqueta}<input data-f="${c.k}" value="${esc(datos[c.k] || '')}" placeholder="${esc(c.ayuda || '')}"></label>`).join('')
     }<p id="error-ficha" class="error" role="alert"></p><div class="acciones"><button type="button" id="ficha-guardar">Guardar ficha</button><button type="button" class="sec" id="ficha-cancelar">Cancelar</button></div></fieldset>`;
     $('#cat-editor').classList.remove('oculto');
     $('#cat-editor input').focus();
@@ -168,13 +177,60 @@
     $('#cat-editor').classList.add('oculto');
   }
 
-  function renderSugerencia() {
-    const s = sugerirTipo(estado);
-    const t = TIPOS[s.tipo];
-    const coincide = s.tipo === estado.tipo;
-    $('#sugerencia-tipo').innerHTML = `<p><b>Tipo sugerido: ${esc(t.etiqueta)}</b>, porque ${esc(s.razon)}.</p><ul>${t.normas.map(badge).join('')}</ul>${
-      coincide ? '<p class="ayuda">Es el tipo seleccionado.</p>' : `<button type="button" id="aplicar-tipo">Usar tipo sugerido</button>`}`;
-    $('#sugerencia-tipo').classList.toggle('distinto', !coincide);
+  const opcionesRiss = sel => Object.entries(APARTADOS_RISS).map(([ap, et]) =>
+    `<optgroup label="${esc(et)}">${UNIDADES_RISS.filter(u => u.ap === ap).map(u => `<option value="${u.id}"${sel === u.id ? ' selected' : ''}>${esc(u.nombre)}</option>`).join('')}</optgroup>`).join('');
+
+  function renderAnalisis() {
+    const a = analizarConvenio(estado);
+    const t = TIPOS[a.tipo];
+    const coincide = a.tipo === estado.tipo;
+    const firm = estado.firmanteRiss || a.firmante;
+    const u = UNIDADES_RISS.find(x => x.id === firm);
+    const sugerida = UNIDADES_RISS.find(x => x.id === a.firmante);
+    const yaParte = estado.partes.some(p => p.unidadRiss === firm);
+    $('#analisis').innerHTML = `
+      ${a.advertencias.length ? `<div class="aviso-legal"><ul>${a.advertencias.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
+      <div class="bloque ${coincide ? '' : 'distinto'}">
+        <h4>Convenio recomendado: ${esc(t.etiqueta)}</h4>
+        <p>Porque ${esc(a.razones.join('; '))}.</p>
+        <ul class="normas">${t.normas.map(badge).join('')}</ul>
+        ${coincide ? '<p class="ayuda">Es el tipo seleccionado.</p>' : '<button type="button" id="aplicar-tipo">Usar tipo recomendado</button>'}
+      </div>
+      <div class="bloque">
+        <h4>Unidad firmante de la Secretaría de Salud</h4>
+        <p>Sugerida: <b>${esc(sugerida.nombre)}</b>, porque ${esc(a.motivoFirmante)}</p>
+        <label>Unidad firmante<select id="firmante-riss" data-k="firmanteRiss">${opcionesRiss(firm)}</select></label>
+        ${yaParte ? '<p class="ayuda">Ya está en el convenio como parte.</p>' : `<button type="button" id="agregar-firmante">Agregar ${esc(u.siglas || u.nombre)} como parte</button>`}
+      </div>
+      <div class="bloque">
+        <h4>Competencia conforme al Reglamento Interior</h4>
+        <ul class="riss">${a.riss.map(([ref, txt]) => `<li><b>RISS ${esc(ref)}.</b> ${esc(txt)}</li>`).join('')}</ul>
+        <p class="ayuda">${esc(RISS.cita)}.</p>
+      </div>
+      <div class="bloque">
+        <h4>Requisitos previos a la firma</h4>
+        <ul class="lista-check">${a.requisitos.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+      </div>
+      <details class="bloque"><summary>Doctrina jurídica aplicable</summary><ul>${a.doctrina.map(x => `<li>${esc(x)}</li>`).join('')}</ul></details>`;
+  }
+
+  function renderFinalidades() {
+    $('#finalidades').innerHTML = Object.entries(FINALIDADES).map(([k, et]) =>
+      `<label class="check"><input type="checkbox" data-fin="${k}"${estado.finalidades.includes(k) ? ' checked' : ''}> ${esc(et)}</label>`).join('');
+    $('#contraparte').innerHTML = `<option value="">Selecciona…</option>${Object.entries(CONTRAPARTES).map(([k, et]) => `<option value="${k}">${esc(et)}</option>`).join('')}`;
+    $('#contraparte').value = estado.contraparte || '';
+  }
+
+  function agregarFirmante() {
+    const id = estado.firmanteRiss || analizarConvenio(estado).firmante;
+    const datos = datosUnidadRiss(id);
+    if (!datos) return;
+    const vacia = estado.partes.findIndex(p => !lleno(p.denominacion) && !lleno(p.siglas) && !lleno(p.representante));
+    if (vacia >= 0) Object.assign(estado.partes[vacia], datos);
+    else estado.partes.unshift(Object.assign(parteVacia(), datos));
+    renderPartes();
+    actualizar();
+    aviso('Unidad firmante agregada con su fundamento del Reglamento Interior.');
   }
 
   // ---------- Generación del convenio ----------
@@ -233,9 +289,12 @@
       d.forEach((x, j) => html.push(`<p class="decl">${r}.${j + 1}. ${x}</p>`));
     });
     const rc = ROMANOS[P.length];
+    const dp = [];
+    if (lleno(e.finalidadTexto)) dp.push(`Reconocen la importancia de coordinar esfuerzos institucionales para contribuir, en el ámbito de sus respectivas atribuciones, a ${esc(e.finalidadTexto.trim().replace(/\.$/, ''))}.`);
+    dp.push(`Manifiestan que la celebración del presente ${CONV} se realiza de manera libre y voluntaria, sin mediar error, dolo, mala fe o cualquier otro vicio del consentimiento que pudiera afectar su validez.`);
+    dp.push(`Se reconocen mutuamente la personalidad jurídica, capacidad legal, atribuciones y facultades con las que comparecen para la celebración del presente ${CONV}, y manifiestan que no existe impedimento legal alguno para obligarse en sus términos, al tenor de las siguientes:`);
     html.push(`<p class="decl-h">${rc}. “LAS PARTES” declaran que:</p>`);
-    html.push(`<p class="decl">${rc}.1. Manifiestan que la celebración del presente ${CONV} se realiza de manera libre y voluntaria, sin mediar error, dolo, mala fe o cualquier otro vicio del consentimiento que pudiera afectar su validez.</p>`);
-    html.push(`<p class="decl">${rc}.2. Se reconocen mutuamente la personalidad jurídica, capacidad legal, atribuciones y facultades con las que comparecen para la celebración del presente ${CONV}, y manifiestan que no existe impedimento legal alguno para obligarse en sus términos, al tenor de las siguientes:</p>`);
+    dp.forEach((x, j) => html.push(`<p class="decl">${rc}.${j + 1}. ${x}</p>`));
     fund.push({ t: 'Declaraciones: naturaleza jurídica', n: FUNDAMENTO_SECCION.naturaleza });
     fund.push({ t: 'Declaraciones: cargo y facultades de quien suscribe', n: FUNDAMENTO_SECCION.facultades });
     if (aportantes.length) fund.push({ t: 'Declaraciones: suficiencia presupuestaria', n: FUNDAMENTO_SECCION.recursos });
@@ -379,7 +438,9 @@
         <details${lleno(p.denominacion) ? '' : ' open'}><summary>Datos de la institución</summary>
         ${CAMPOS_FICHA.map(cf => cf.tipo === 'naturaleza'
           ? `<label>${cf.etiqueta}<select data-p="${i}" data-k="naturaleza">${opts}</select></label>`
-          : campo(i, cf.k, cf.etiqueta, cf.ayuda)).join('')}
+          : cf.tipo === 'riss'
+            ? `<label>${cf.etiqueta}<select data-p="${i}" data-k="unidadRiss"><option value="">No aplica</option>${opcionesRiss(p.unidadRiss)}</select></label>`
+            : campo(i, cf.k, cf.etiqueta, cf.ayuda)).join('')}
         </details>
         <label class="check solo-recursos"><input type="checkbox" data-p="${i}" data-k="aporta"${p.aporta ? ' checked' : ''}> Aporta recursos</label>
         <div class="solo-recursos">${campo(i, 'suficiencia', 'Documento de suficiencia presupuestaria (opcional)', 'oficio y fecha')}</div>
@@ -422,7 +483,7 @@
     $('#doc').innerHTML = r.html;
     $('#fund').innerHTML = r.fund.map(f => `<div class="fund-item"><h4>${esc(f.t)}</h4><ul>${f.n.map(badge).join('')}</ul></div>`).join('');
     const pend = $('#doc').querySelectorAll('.ph').length;
-    renderSugerencia();
+    renderAnalisis();
     $('#alertas').innerHTML = r.alertas.length || pend
       ? `<p><b>${pend}</b> datos pendientes en el documento.</p><ul>${r.alertas.map(a => `<li>${esc(a)}</li>`).join('')}</ul>`
       : '<p>Sin datos pendientes.</p>';
@@ -431,11 +492,23 @@
 
   function onInput(ev) {
     const el = ev.target;
+    if (el.dataset.fin) {
+      if (ev.type !== 'change') return;
+      estado.finalidades = estado.finalidades.filter(x => x !== el.dataset.fin);
+      if (el.checked) estado.finalidades.push(el.dataset.fin);
+      return actualizar();
+    }
     const k = el.dataset.k;
     if (!k) return;
     const val = el.type === 'checkbox' ? el.checked : el.value;
-    if (el.dataset.p !== undefined) estado.partes[+el.dataset.p][k] = val;
-    else estado[k] = val;
+    if (el.dataset.p !== undefined) {
+      const p = estado.partes[+el.dataset.p];
+      p[k] = val;
+      if (k === 'unidadRiss' && ev.type === 'change') {
+        if (val) Object.assign(p, datosUnidadRiss(val));
+        renderPartes();
+      }
+    } else estado[k] = val;
     if (['tipo', 'recursos', 'vigenciaIndef'].includes(k)) visibilidad();
     actualizar();
   }
@@ -530,11 +603,18 @@
     $('#tabla-normas').innerHTML = `<table class="rev"><thead><tr><th>Norma</th><th>Referencia</th><th>Uso en convenios</th><th>Estado</th></tr></thead><tbody>${
       Object.values(NORMATIVA).map(n => `<tr><td>${esc(n.nombre)}</td><td>${esc(n.ref || '—')}</td><td>${esc(n.uso)}</td><td><span class="badge ${n.estado}">${ESTADOS[n.estado]}</span>${n.fecha ? '<br>' + esc(n.fecha) : ''}</td></tr>`).join('')
     }</tbody></table>`;
+    $('#tabla-riss').innerHTML = `<table class="rev"><thead><tr><th>Unidad</th><th>Art. 2</th><th>Facultad para suscribir convenios</th><th>Requisitos</th></tr></thead><tbody>${
+      UNIDADES_RISS.map(u => {
+        const d = datosUnidadRiss(u.id);
+        return `<tr><td>${esc(u.nombre)}</td><td>Apartado ${u.ap}, fr. ${u.fx}</td><td>${esc(d.fundFacultades.replace(/,? del Reglamento Interior.*$/, ''))}</td><td>${RISS_SUSCRIPCION[u.ap].requisitos.map(esc).join('<br>') || '—'}</td></tr>`;
+      }).join('')
+    }</tbody></table>`;
   }
 
   // ---------- Arranque ----------
 
   function recargar() {
+    renderFinalidades();
     renderPartes();
     cargarGenerales();
     visibilidad();
@@ -569,9 +649,10 @@
       actualizar();
     });
     $('#cat-agregar').addEventListener('click', () => agregarDesdeCatalogo($('#cat-sel').value));
-    $('#sugerencia-tipo').addEventListener('click', ev => {
+    $('#analisis').addEventListener('click', ev => {
+      if (ev.target.id === 'agregar-firmante') return agregarFirmante();
       if (ev.target.id !== 'aplicar-tipo') return;
-      estado.tipo = sugerirTipo(estado).tipo;
+      estado.tipo = analizarConvenio(estado).tipo;
       $('#tipo').value = estado.tipo;
       visibilidad();
       actualizar();
