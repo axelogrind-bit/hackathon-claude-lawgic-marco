@@ -61,6 +61,7 @@ details summary { cursor: pointer; font-size: 13px; color: var(--texto-2); margi
 .sugerencia p { margin: 0 0 6px; }
 .sugerencia ul { margin: 0 0 8px; padding: 0; list-style: none; font-size: 12px; }
 #cat-editor { max-width: 640px; }
+.subtitulo { font-size: 16px; font-weight: 600; margin: 24px 0 8px; }
 .celda-acciones { white-space: nowrap; }
 
 .vista { position: sticky; top: 12px; }
@@ -86,7 +87,19 @@ details summary { cursor: pointer; font-size: 13px; color: var(--texto-2); margi
 .badge { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 4px; }
 .badge.pv { background: var(--relevante-bg); color: var(--relevante); }
 .badge.sd { background: var(--preventivo-bg); color: var(--preventivo); }
-.badge.vf { background: var(--ok-bg); color: var(--ok); }
+.badge.vf, .badge.tr { background: var(--ok-bg); color: var(--ok); }
+.analisis { font-size: 13px; }
+.analisis .bloque { border: 1px solid var(--borde); border-radius: var(--radio); padding: 10px 12px; margin: 0 0 10px; background: var(--fondo); }
+.analisis .bloque.distinto { border-color: var(--acento); }
+.analisis h4 { margin: 0 0 6px; font-size: 14px; }
+.analisis p { margin: 0 0 8px; }
+.analisis ul { margin: 0 0 8px; padding-left: 18px; }
+.analisis ul.normas { list-style: none; padding: 0; font-size: 12px; }
+.analisis ul.riss li, .analisis ul.lista-check li { margin: 0 0 4px; }
+.analisis details summary { margin: 0; font-weight: 600; color: var(--texto); }
+.aviso-legal { background: var(--relevante-bg); color: var(--relevante); border-radius: var(--radio); padding: 8px 12px; margin: 0 0 10px; }
+.aviso-legal ul { margin: 0; padding-left: 18px; }
+#finalidades label.check { margin-bottom: 6px; }
 
 #texto-rev { min-height: 220px; margin: 0 0 6px; background: var(--superficie); }
 .resumen { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
