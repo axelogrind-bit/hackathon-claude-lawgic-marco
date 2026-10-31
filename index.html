@@ -14,6 +14,7 @@
     </div>
     <nav class="tabs" role="tablist">
       <button type="button" role="tab" data-tab="tab-generar" aria-selected="true">Generar</button>
+      <button type="button" role="tab" data-tab="tab-catalogo" aria-selected="false">Catálogo</button>
       <button type="button" role="tab" data-tab="tab-revisar" aria-selected="false">Revisar</button>
       <button type="button" role="tab" data-tab="tab-normas" aria-selected="false">Marco normativo</button>
     </nav>
@@ -30,52 +31,68 @@
           </div>
 
           <fieldset>
-            <legend>Instrumento</legend>
+            <legend>1. Partes del convenio</legend>
+            <label>Institución del catálogo<select id="cat-sel"></select></label>
+            <div class="acciones">
+              <button type="button" id="cat-agregar">Agregar al convenio</button>
+              <button type="button" id="agregar-parte" class="sec">Agregar parte en blanco</button>
+            </div>
+            <p class="ayuda">Al agregar una institución se llenan su proemio y sus declaraciones. Puedes ajustar los datos en cada parte.</p>
+          </fieldset>
+
+          <div id="partes"></div>
+
+          <fieldset>
+            <legend>2. Tipo de convenio</legend>
+            <label class="check"><input type="checkbox" data-k="qModifica"> Modifica un convenio vigente</label>
+            <label class="check"><input type="checkbox" data-k="qDeriva"> Deriva de un convenio general o marco</label>
+            <label class="check"><input type="checkbox" data-k="qMarco"> Solo fija bases generales para convenios específicos posteriores</label>
+            <div id="sugerencia-tipo" class="sugerencia"></div>
             <label>Tipo de convenio<select id="tipo" data-k="tipo"></select></label>
             <p id="nota-tipo" class="ayuda"></p>
-            <label class="no-modif">Materia<input data-k="materia" placeholder="investigación e innovación para la salud"></label>
+            <label class="no-modif">Complemento del título<input data-k="materia" placeholder="para el servicio de … / en materia de …"></label>
             <label class="solo-principal">Convenio principal<input data-k="principal" placeholder="Convenio de Colaboración para …"></label>
             <label class="solo-principal">Fecha del convenio principal<input type="date" data-k="principalFecha"></label>
             <label class="solo-modif">Modificaciones (una por línea)<textarea data-k="modificaciones" rows="4" placeholder="Se modifica la cláusula TERCERA para quedar como sigue: …"></textarea></label>
             <label>Antecedentes (uno por línea, opcional)<textarea data-k="antecedentes" rows="3"></textarea></label>
           </fieldset>
 
-          <div id="partes"></div>
-          <button type="button" id="agregar-parte" class="sec">Agregar parte</button>
-
           <fieldset class="no-modif">
-            <legend>Objeto y compromisos</legend>
-            <label>Objeto<textarea data-k="objeto" rows="3" placeholder="establecer las bases de colaboración para …"></textarea></label>
+            <legend>3. Objeto y compromisos</legend>
+            <label>Objeto (completa la frase «El presente “CONVENIO” tiene por objeto…»)<textarea data-k="objeto" rows="3" placeholder="establecer las bases y mecanismos de colaboración conforme a los cuales …"></textarea></label>
             <label>Compromisos conjuntos (uno por línea)<textarea data-k="conjuntos" rows="3"></textarea></label>
           </fieldset>
 
           <fieldset class="no-modif">
-            <legend>Recursos</legend>
+            <legend>4. Recursos</legend>
             <label>¿El convenio implica recursos?<select data-k="recursos">
               <option value="no">No implica transferencia de recursos</option>
-              <option value="si">Sí, una parte aporta recursos</option>
+              <option value="si">Sí, una o más partes aportan recursos</option>
             </select></label>
-            <label class="solo-recursos">Parte que aporta<select id="aportante" data-k="aportante"></select></label>
-            <label class="solo-recursos">Monto<input data-k="monto" placeholder="$0.00 (cantidad con letra)"></label>
-            <label class="solo-recursos">Fuente de los recursos<input data-k="fuente" placeholder="partida presupuestal o programa"></label>
+            <p class="ayuda solo-recursos">Marca en cada parte la casilla «Aporta recursos».</p>
+            <label class="solo-recursos">Monto<input data-k="monto" placeholder="la cantidad de $0.00 (cantidad con letra) / los montos previstos en el Anexo …"></label>
+            <label class="solo-recursos">Fuente de los recursos<input data-k="fuente" placeholder="su presupuesto autorizado / partida presupuestal"></label>
+            <label class="solo-recursos">Condiciones (anticipo, calendario, comprobación; una por línea)<textarea data-k="condiciones" rows="3"></textarea></label>
           </fieldset>
 
           <fieldset>
-            <legend>Vigencia y cláusulas</legend>
+            <legend>5. Vigencia y cláusulas</legend>
             <label class="check no-modif"><input type="checkbox" data-k="vigenciaIndef"> Vigencia indefinida</label>
             <label class="no-modif">Fecha de término<input type="date" id="vigenciaFin" data-k="vigenciaFin"></label>
             <label class="no-modif">Días de aviso para terminación anticipada<input type="number" min="1" step="1" data-k="diasAviso"></label>
             <label class="check no-modif"><input type="checkbox" data-k="confidencialidad"> Confidencialidad</label>
             <label class="check no-modif"><input type="checkbox" data-k="datos"> Protección de datos personales</label>
             <label class="check no-modif"><input type="checkbox" data-k="pi"> Propiedad intelectual</label>
+            <label class="check no-modif"><input type="checkbox" data-k="cesion"> Prohibición de cesión de derechos</label>
+            <label class="no-modif">Anexos (uno por línea, opcional)<textarea data-k="anexos" rows="2" placeholder="Anexo de Ejecución"></textarea></label>
             <label>Jurisdicción<input data-k="jurisdiccion"></label>
           </fieldset>
 
           <fieldset>
-            <legend>Formalización</legend>
+            <legend>6. Formalización</legend>
             <label>Lugar de firma<input data-k="lugar"></label>
             <label>Fecha de firma<input type="date" data-k="fechaFirma"></label>
-            <label>Número de ejemplares<input type="number" min="1" step="1" data-k="ejemplares" placeholder="igual al número de partes"></label>
+            <label>Número de ejemplares (opcional)<input type="number" min="1" step="1" data-k="ejemplares"></label>
           </fieldset>
         </form>
 
@@ -92,6 +109,18 @@
           <div id="fund" class="fundamento"></div>
         </div>
       </div>
+    </section>
+
+    <section id="tab-catalogo" class="panel oculto">
+      <p class="ayuda">Base de instituciones con sus datos legales: naturaleza jurídica, representante, nombramiento, facultades o poderes, RFC, domicilio y correo. Las fichas marcadas como «Ejemplo» son ficticias. Tus fichas se guardan solo en este navegador; usa «Exportar JSON» para respaldarlas o compartirlas.</p>
+      <div class="acciones">
+        <button type="button" id="cat-nueva">Nueva ficha</button>
+        <label class="boton sec">Importar JSON<input type="file" id="cat-importar" accept=".json" hidden></label>
+        <button type="button" id="cat-exportar" class="sec">Exportar JSON</button>
+        <button type="button" id="cat-restaurar" class="sec">Restaurar ejemplos</button>
+      </div>
+      <div id="cat-editor" class="oculto"></div>
+      <div id="cat-lista"></div>
     </section>
 
     <section id="tab-revisar" class="panel oculto">
@@ -123,6 +152,7 @@
   <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
   <script src="js/normativa.js"></script>
   <script src="js/clausulas.js"></script>
+  <script src="js/catalogo.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

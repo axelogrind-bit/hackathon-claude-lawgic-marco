@@ -13,18 +13,21 @@ const TIPOS = {
   colaboracion: {
     etiqueta: 'Colaboración',
     titulo: 'CONVENIO DE COLABORACIÓN',
+    nombre: 'Convenio de Colaboración',
     normas: ['ccf', 'lfpa'],
     nota: 'Entre dependencias, entidades u otras instituciones públicas o privadas.'
   },
   marco: {
     etiqueta: 'General o marco de colaboración',
     titulo: 'CONVENIO GENERAL DE COLABORACIÓN',
+    nombre: 'Convenio General de Colaboración',
     normas: ['ccf'],
     nota: 'Fija bases generales; se ejecuta mediante convenios específicos.'
   },
   especifico: {
     etiqueta: 'Específico (deriva de un convenio general)',
     titulo: 'CONVENIO ESPECÍFICO DE COLABORACIÓN',
+    nombre: 'Convenio Específico de Colaboración',
     normas: ['ccf'],
     principal: true,
     nota: 'Desarrolla acciones concretas de un convenio general.'
@@ -32,18 +35,21 @@ const TIPOS = {
   coordinacion: {
     etiqueta: 'Coordinación',
     titulo: 'CONVENIO DE COORDINACIÓN',
+    nombre: 'Convenio de Coordinación',
     normas: ['lp', 'lfprh'],
     nota: 'Con entidades federativas u otros órdenes de gobierno.'
   },
   concertacion: {
     etiqueta: 'Concertación',
     titulo: 'CONVENIO DE CONCERTACIÓN',
+    nombre: 'Convenio de Concertación',
     normas: ['lp'],
     nota: 'Con representaciones de grupos sociales o con particulares.'
   },
   modificatorio: {
     etiqueta: 'Modificatorio',
     titulo: 'CONVENIO MODIFICATORIO',
+    nombre: 'Convenio Modificatorio',
     normas: ['ccf'],
     principal: true,
     nota: 'Modifica un convenio vigente; las demás cláusulas subsisten.'
@@ -62,6 +68,10 @@ const NATURALEZAS = {
   descentralizado: {
     etiqueta: 'Organismo público descentralizado',
     texto: 'un organismo público descentralizado de la Administración Pública Federal, con personalidad jurídica y patrimonio propios'
+  },
+  paraestatal: {
+    etiqueta: 'Empresa de participación estatal mayoritaria',
+    texto: 'una empresa de participación estatal mayoritaria de la Administración Pública Federal'
   },
   desconcentrado: {
     etiqueta: 'Órgano administrativo desconcentrado',
@@ -84,6 +94,18 @@ const NATURALEZAS = {
     texto: 'una organización de la sociedad civil legalmente constituida conforme a las leyes de los Estados Unidos Mexicanos'
   }
 };
+
+// Identificación del tipo de convenio a partir de las partes y de tres preguntas.
+// Devuelve el tipo sugerido y la razón; el orden de las reglas define la prioridad.
+function sugerirTipo(e) {
+  const nats = e.partes.map(p => p.naturaleza);
+  if (e.qModifica) return { tipo: 'modificatorio', razon: 'modifica un convenio vigente' };
+  if (e.qDeriva) return { tipo: 'especifico', razon: 'deriva de un convenio general o marco y desarrolla acciones concretas' };
+  if (e.qMarco) return { tipo: 'marco', razon: 'solo fija bases generales que se ejecutarán mediante convenios específicos' };
+  if (nats.includes('estatal')) return { tipo: 'coordinacion', razon: 'participa una entidad federativa u otro orden de gobierno' };
+  if (nats.some(n => n === 'privada' || n === 'social')) return { tipo: 'concertacion', razon: 'participa una persona moral privada o una organización de la sociedad civil' };
+  return { tipo: 'colaboracion', razon: 'participan dependencias, entidades o instituciones públicas o académicas' };
+}
 
 // Reglas de revisión. Cada `test` recibe el texto normalizado (minúsculas, sin acentos)
 // y devuelve true cuando el elemento está presente o la condición se cumple.
@@ -116,12 +138,28 @@ const REVISION = [
     sugerencia: '[NOMBRE], en su carácter de [CARGO], cuenta con las facultades necesarias para suscribir el presente instrumento, de conformidad con [ordenamiento y artículo, o poder notarial], mismas que no le han sido revocadas, modificadas ni limitadas en forma alguna.'
   },
   {
+    elemento: 'Acreditación del cargo de quien suscribe',
+    clasificacion: 'Relevante',
+    seccion: 'facultades',
+    test: t => /nombramiento|instrumento notarial|escritura publica|poder notarial/.test(t),
+    observacion: 'No se indica con qué documento se acredita el cargo (nombramiento) o la representación (instrumento notarial).',
+    sugerencia: '[NOMBRE], en su carácter de [CARGO], acredita dicho cargo con el nombramiento de fecha [fecha], y acredita su personalidad y facultades para suscribir el presente “CONVENIO” de conformidad con [ordenamiento y artículos, o instrumento notarial número, notario y fecha].'
+  },
+  {
+    elemento: 'Domicilio y correo electrónico institucional',
+    clasificacion: 'Preventivo',
+    seccion: 'avisos',
+    test: t => /domicilio/.test(t) && /correo electronico|@/.test(t),
+    observacion: 'No se señalan domicilio y correo electrónico institucional de cada parte para avisos y notificaciones.',
+    sugerencia: 'Para los fines y efectos legales del presente “CONVENIO”, señala como domicilio el ubicado en [domicilio], y como correo electrónico institucional [correo].'
+  },
+  {
     elemento: 'Objeto',
     clasificacion: 'Crítico',
     seccion: 'objeto',
     test: t => /objeto/.test(t),
     observacion: 'No se identifica una cláusula de objeto.',
-    sugerencia: 'PRIMERA.- OBJETO. El objeto del presente convenio es [describir de forma clara, lícita y dentro de las atribuciones de cada parte].'
+    sugerencia: 'PRIMERA. OBJETO. El presente “CONVENIO” tiene por objeto [describir de forma clara, lícita y dentro de las atribuciones de cada parte].'
   },
   {
     elemento: 'Compromisos de las partes',
@@ -220,6 +258,14 @@ const REVISION = [
     sugerencia: 'CASO FORTUITO O FUERZA MAYOR. “LAS PARTES” no serán responsables del incumplimiento derivado de caso fortuito o fuerza mayor; las actividades se reanudarán cuando cesen las causas.'
   },
   {
+    elemento: 'Avisos, comunicaciones y notificaciones',
+    clasificacion: 'Preventivo',
+    seccion: 'avisos',
+    test: t => /avisos|notificaciones/.test(t),
+    observacion: 'No se regula la forma de realizar avisos, comunicaciones y notificaciones entre las partes.',
+    sugerencia: 'AVISOS, COMUNICACIONES Y NOTIFICACIONES. Todos los avisos, comunicaciones y notificaciones con efectos jurídicos deberán realizarse por escrito, con acuse de recibo, en los domicilios señalados en las declaraciones, o mediante correo electrónico institucional con confirmación de recepción.'
+  },
+  {
     elemento: 'Interpretación y solución de controversias',
     clasificacion: 'Relevante',
     seccion: 'controversias',
@@ -231,9 +277,9 @@ const REVISION = [
     elemento: 'Cierre, ejemplares y firmas',
     clasificacion: 'Relevante',
     seccion: 'firmas',
-    test: t => /(firman|firmado|ejemplares)/.test(t),
+    test: t => /(firman|firmado|suscriben|ejemplares)/.test(t),
     observacion: 'No se identifica el cierre con lugar, fecha, número de ejemplares y firmas.',
-    sugerencia: 'Leído que fue el presente convenio y enteradas “LAS PARTES” de su contenido y alcance legal, lo firman en [número] ejemplares en [lugar], el [fecha].'
+    sugerencia: 'Leído que fue el presente Convenio por quienes en él intervienen y enteradas “LAS PARTES” de su contenido y alcance legal, lo suscriben en [lugar], a los [día] días del mes de [mes] de [año].'
   },
   {
     elemento: 'Datos pendientes de llenar',
