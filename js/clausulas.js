@@ -95,18 +95,6 @@ const NATURALEZAS = {
   }
 };
 
-// Identificación del tipo de convenio a partir de las partes y de tres preguntas.
-// Devuelve el tipo sugerido y la razón; el orden de las reglas define la prioridad.
-function sugerirTipo(e) {
-  const nats = e.partes.map(p => p.naturaleza);
-  if (e.qModifica) return { tipo: 'modificatorio', razon: 'modifica un convenio vigente' };
-  if (e.qDeriva) return { tipo: 'especifico', razon: 'deriva de un convenio general o marco y desarrolla acciones concretas' };
-  if (e.qMarco) return { tipo: 'marco', razon: 'solo fija bases generales que se ejecutarán mediante convenios específicos' };
-  if (nats.includes('estatal')) return { tipo: 'coordinacion', razon: 'participa una entidad federativa u otro orden de gobierno' };
-  if (nats.some(n => n === 'privada' || n === 'social')) return { tipo: 'concertacion', razon: 'participa una persona moral privada o una organización de la sociedad civil' };
-  return { tipo: 'colaboracion', razon: 'participan dependencias, entidades o instituciones públicas o académicas' };
-}
-
 // Reglas de revisión. Cada `test` recibe el texto normalizado (minúsculas, sin acentos)
 // y devuelve true cuando el elemento está presente o la condición se cumple.
 const HAY_DINERO = /(\$\s?\d|pesos|aportara|aportacion|transferencia de recursos|recursos (federales|presupuest|economicos|financieros))/;
