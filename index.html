@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lawgic Convenios</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="barra">
+    <div>
+      <h1>Lawgic Convenios</h1>
+      <p>Genera y revisa convenios de la Administración Pública Federal con su fundamento normativo</p>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button type="button" role="tab" data-tab="tab-generar" aria-selected="true">Generar</button>
+      <button type="button" role="tab" data-tab="tab-revisar" aria-selected="false">Revisar</button>
+      <button type="button" role="tab" data-tab="tab-normas" aria-selected="false">Marco normativo</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="tab-generar" class="panel">
+      <div class="dos-columnas">
+        <form id="form" class="formulario" autocomplete="off" onsubmit="return false">
+          <div class="acciones">
+            <button type="button" id="nuevo" class="sec">Nuevo</button>
+            <button type="button" id="guardar-json" class="sec">Guardar borrador</button>
+            <label class="boton sec">Abrir borrador<input type="file" id="abrir-json" accept=".json" hidden></label>
+          </div>
+
+          <fieldset>
+            <legend>Instrumento</legend>
+            <label>Tipo de convenio<select id="tipo" data-k="tipo"></select></label>
+            <p id="nota-tipo" class="ayuda"></p>
+            <label class="no-modif">Materia<input data-k="materia" placeholder="investigación e innovación para la salud"></label>
+            <label class="solo-principal">Convenio principal<input data-k="principal" placeholder="Convenio de Colaboración para …"></label>
+            <label class="solo-principal">Fecha del convenio principal<input type="date" data-k="principalFecha"></label>
+            <label class="solo-modif">Modificaciones (una por línea)<textarea data-k="modificaciones" rows="4" placeholder="Se modifica la cláusula TERCERA para quedar como sigue: …"></textarea></label>
+            <label>Antecedentes (uno por línea, opcional)<textarea data-k="antecedentes" rows="3"></textarea></label>
+          </fieldset>
+
+          <div id="partes"></div>
+          <button type="button" id="agregar-parte" class="sec">Agregar parte</button>
+
+          <fieldset class="no-modif">
+            <legend>Objeto y compromisos</legend>
+            <label>Objeto<textarea data-k="objeto" rows="3" placeholder="establecer las bases de colaboración para …"></textarea></label>
+            <label>Compromisos conjuntos (uno por línea)<textarea data-k="conjuntos" rows="3"></textarea></label>
+          </fieldset>
+
+          <fieldset class="no-modif">
+            <legend>Recursos</legend>
+            <label>¿El convenio implica recursos?<select data-k="recursos">
+              <option value="no">No implica transferencia de recursos</option>
+              <option value="si">Sí, una parte aporta recursos</option>
+            </select></label>
+            <label class="solo-recursos">Parte que aporta<select id="aportante" data-k="aportante"></select></label>
+            <label class="solo-recursos">Monto<input data-k="monto" placeholder="$0.00 (cantidad con letra)"></label>
+            <label class="solo-recursos">Fuente de los recursos<input data-k="fuente" placeholder="partida presupuestal o programa"></label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Vigencia y cláusulas</legend>
+            <label class="check no-modif"><input type="checkbox" data-k="vigenciaIndef"> Vigencia indefinida</label>
+            <label class="no-modif">Fecha de término<input type="date" id="vigenciaFin" data-k="vigenciaFin"></label>
+            <label class="no-modif">Días de aviso para terminación anticipada<input type="number" min="1" step="1" data-k="diasAviso"></label>
+            <label class="check no-modif"><input type="checkbox" data-k="confidencialidad"> Confidencialidad</label>
+            <label class="check no-modif"><input type="checkbox" data-k="datos"> Protección de datos personales</label>
+            <label class="check no-modif"><input type="checkbox" data-k="pi"> Propiedad intelectual</label>
+            <label>Jurisdicción<input data-k="jurisdiccion"></label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Formalización</legend>
+            <label>Lugar de firma<input data-k="lugar"></label>
+            <label>Fecha de firma<input type="date" data-k="fechaFirma"></label>
+            <label>Número de ejemplares<input type="number" min="1" step="1" data-k="ejemplares" placeholder="igual al número de partes"></label>
+          </fieldset>
+        </form>
+
+        <div class="vista">
+          <div class="acciones">
+            <button type="button" id="descargar-doc">Descargar Word</button>
+            <button type="button" id="imprimir" class="sec">Imprimir o PDF</button>
+            <button type="button" id="copiar" class="sec">Copiar texto</button>
+            <button type="button" id="a-revision" class="sec">Revisar este convenio</button>
+          </div>
+          <div id="alertas" class="alertas"></div>
+          <article id="doc" class="documento"></article>
+          <label class="check"><input type="checkbox" id="ver-fund" checked> Mostrar fundamento por apartado</label>
+          <div id="fund" class="fundamento"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-revisar" class="panel oculto">
+      <p class="ayuda">Carga un .docx o .txt, o pega el texto. La revisión busca los elementos mínimos por palabras clave y los clasifica como Crítico, Relevante o Preventivo. Confirma cada hallazgo leyendo el instrumento.</p>
+      <div class="acciones">
+        <label class="boton sec">Cargar archivo<input type="file" id="archivo-rev" accept=".docx,.txt" hidden></label>
+      </div>
+      <textarea id="texto-rev" rows="12" placeholder="Pega aquí el texto del convenio"></textarea>
+      <p id="error-rev" class="error" role="alert"></p>
+      <div class="acciones">
+        <button type="button" id="revisar">Revisar</button>
+        <button type="button" id="exportar-rev" class="sec" disabled>Descargar cédula de observaciones</button>
+      </div>
+      <div id="resumen-rev" class="resumen"></div>
+      <div id="tabla-rev"></div>
+    </section>
+
+    <section id="tab-normas" class="panel oculto">
+      <p class="ayuda">Normas de referencia. «Por verificar»: falta confirmar el texto vigente en el Diario Oficial de la Federación. «Según documentos de trabajo»: la fecha proviene de documentos internos y falta confirmarla. Verifica la vigencia antes de citar.</p>
+      <div id="tabla-normas"></div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    Herramienta de apoyo. No sustituye la revisión de la unidad jurídica competente. Los datos se guardan solo en este navegador.
+  </footer>
+  <div id="aviso" class="aviso" role="status"></div>
+
+  <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
+  <script src="js/normativa.js"></script>
+  <script src="js/clausulas.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
