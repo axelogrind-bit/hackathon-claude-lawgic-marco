@@ -31,7 +31,17 @@
           </div>
 
           <fieldset>
-            <legend>1. Partes del convenio</legend>
+            <legend>1. ¿Qué convenio necesitas?</legend>
+            <label>Objeto del convenio (completa la frase «El presente “CONVENIO” tiene por objeto…»)<textarea data-k="objeto" rows="3" placeholder="establecer las bases y mecanismos de colaboración conforme a los cuales …"></textarea></label>
+            <label>¿Con quién se celebra?<select id="contraparte" data-k="contraparte"></select></label>
+            <p class="ayuda">¿Qué se pretende obtener? Marca todo lo que aplique.</p>
+            <div id="finalidades"></div>
+            <label>Describe el resultado que se busca (opcional; se usa en la declaración de «LAS PARTES»)<textarea data-k="finalidadTexto" rows="2" placeholder="la atención oportuna de pacientes que requieren …"></textarea></label>
+            <div id="analisis" class="analisis"></div>
+          </fieldset>
+
+          <fieldset>
+            <legend>2. Partes del convenio</legend>
             <label>Institución del catálogo<select id="cat-sel"></select></label>
             <div class="acciones">
               <button type="button" id="cat-agregar">Agregar al convenio</button>
@@ -43,11 +53,7 @@
           <div id="partes"></div>
 
           <fieldset>
-            <legend>2. Tipo de convenio</legend>
-            <label class="check"><input type="checkbox" data-k="qModifica"> Modifica un convenio vigente</label>
-            <label class="check"><input type="checkbox" data-k="qDeriva"> Deriva de un convenio general o marco</label>
-            <label class="check"><input type="checkbox" data-k="qMarco"> Solo fija bases generales para convenios específicos posteriores</label>
-            <div id="sugerencia-tipo" class="sugerencia"></div>
+            <legend>3. Tipo e instrumento</legend>
             <label>Tipo de convenio<select id="tipo" data-k="tipo"></select></label>
             <p id="nota-tipo" class="ayuda"></p>
             <label class="no-modif">Complemento del título<input data-k="materia" placeholder="para el servicio de … / en materia de …"></label>
@@ -58,13 +64,13 @@
           </fieldset>
 
           <fieldset class="no-modif">
-            <legend>3. Objeto y compromisos</legend>
-            <label>Objeto (completa la frase «El presente “CONVENIO” tiene por objeto…»)<textarea data-k="objeto" rows="3" placeholder="establecer las bases y mecanismos de colaboración conforme a los cuales …"></textarea></label>
+            <legend>4. Compromisos</legend>
+            <p class="ayuda">Los compromisos de cada institución se capturan en su parte.</p>
             <label>Compromisos conjuntos (uno por línea)<textarea data-k="conjuntos" rows="3"></textarea></label>
           </fieldset>
 
           <fieldset class="no-modif">
-            <legend>4. Recursos</legend>
+            <legend>5. Recursos</legend>
             <label>¿El convenio implica recursos?<select data-k="recursos">
               <option value="no">No implica transferencia de recursos</option>
               <option value="si">Sí, una o más partes aportan recursos</option>
@@ -76,7 +82,7 @@
           </fieldset>
 
           <fieldset>
-            <legend>5. Vigencia y cláusulas</legend>
+            <legend>6. Vigencia y cláusulas</legend>
             <label class="check no-modif"><input type="checkbox" data-k="vigenciaIndef"> Vigencia indefinida</label>
             <label class="no-modif">Fecha de término<input type="date" id="vigenciaFin" data-k="vigenciaFin"></label>
             <label class="no-modif">Días de aviso para terminación anticipada<input type="number" min="1" step="1" data-k="diasAviso"></label>
@@ -89,7 +95,7 @@
           </fieldset>
 
           <fieldset>
-            <legend>6. Formalización</legend>
+            <legend>7. Formalización</legend>
             <label>Lugar de firma<input data-k="lugar"></label>
             <label>Fecha de firma<input type="date" data-k="fechaFirma"></label>
             <label>Número de ejemplares (opcional)<input type="number" min="1" step="1" data-k="ejemplares"></label>
@@ -141,6 +147,9 @@
     <section id="tab-normas" class="panel oculto">
       <p class="ayuda">Normas de referencia. «Por verificar»: falta confirmar el texto vigente en el Diario Oficial de la Federación. «Según documentos de trabajo»: la fecha proviene de documentos internos y falta confirmarla. Verifica la vigencia antes de citar.</p>
       <div id="tabla-normas"></div>
+      <h2 class="subtitulo">Reglamento Interior de la Secretaría de Salud: facultad para suscribir convenios</h2>
+      <p class="ayuda">Publicado en el DOF el 27 de febrero de 2025. Para cada unidad del artículo 2: fundamento genérico de suscripción (art. 8, fr. XVII; art. 18, fr. XVIII, o art. 46, fr. VII) y su artículo de atribuciones propias. Reformas posteriores por verificar.</p>
+      <div id="tabla-riss"></div>
     </section>
   </main>
 
@@ -152,6 +161,8 @@
   <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
   <script src="js/normativa.js"></script>
   <script src="js/clausulas.js"></script>
+  <script src="js/riss.js"></script>
+  <script src="js/asistente.js"></script>
   <script src="js/catalogo.js"></script>
   <script src="js/app.js"></script>
 </body>
