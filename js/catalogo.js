@@ -4,6 +4,7 @@ const CAMPOS_FICHA = [
   { k: 'denominacion', etiqueta: 'Denominación', ayuda: 'la Secretaría de …, por conducto de …' },
   { k: 'siglas', etiqueta: 'Cómo se le referirá', ayuda: 'SALUD' },
   { k: 'naturaleza', etiqueta: 'Naturaleza jurídica', tipo: 'naturaleza' },
+  { k: 'unidadRiss', etiqueta: 'Unidad de la Secretaría de Salud (llena el fundamento con el Reglamento Interior)', tipo: 'riss' },
   { k: 'fundNaturaleza', etiqueta: 'Fundamento de su naturaleza jurídica', ayuda: 'los artículos … de la Ley Orgánica de la Administración Pública Federal' },
   { k: 'creacion', etiqueta: 'Instrumento de creación (opcional)', ayuda: 'el Decreto publicado en el DOF el …' },
   { k: 'representante', etiqueta: 'Representante', ayuda: 'grado y nombre completo' },

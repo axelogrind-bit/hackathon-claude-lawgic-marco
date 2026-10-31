@@ -5,6 +5,7 @@
 const ESTADOS = {
   pv: 'Por verificar',
   sd: 'Según documentos de trabajo',
+  tr: 'Texto DOF revisado; reformas por verificar',
   vf: 'Verificada'
 };
 
@@ -41,10 +42,10 @@ const NORMATIVA = {
   },
   riss: {
     nombre: 'Reglamento Interior de la Secretaría de Salud',
-    ref: 'Artículos 2, apartados A y B (unidades administrativas); 8; 13 (CCINSHAE); 21 (DGCOES)',
-    uso: 'Competencia y facultades de las unidades administrativas que suscriben.',
-    estado: 'sd',
-    fecha: 'DOF 27-02-2025'
+    ref: 'Artículos 2 (estructura), 8, fr. XVII y 18, fr. XVIII (suscripción de convenios), 12 y 38 (opinión jurídica), 13 (CCINSHAE) y 21 a 23 (direcciones generales de la CCINSHAE)',
+    uso: 'Competencia y facultades de las unidades administrativas que suscriben y requisitos previos a la firma.',
+    estado: 'tr',
+    fecha: 'DOF 27-02-2025; abrogó el reglamento de 19-01-2004'
   },
   adscripcion: {
     nombre: 'Acuerdo por el que se adscriben orgánicamente las unidades administrativas y órganos administrativos desconcentrados de la Secretaría de Salud',
