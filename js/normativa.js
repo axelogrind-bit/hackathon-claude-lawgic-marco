@@ -1,6 +1,6 @@
 // Marco normativo de referencia. Estados:
 //   pv = por verificar en fuente oficial (DOF / Cámara de Diputados)
-//   sd = dato tomado de documentos de trabajo; falta confirmarlo en fuente oficial
+//   sd = dato tomado de documentos de trabajo (incluido el convenio base); falta confirmarlo en fuente oficial
 // Antes de firmar cualquier instrumento, confirmar el texto vigente de cada norma.
 const ESTADOS = {
   pv: 'Por verificar',
@@ -11,27 +11,27 @@ const ESTADOS = {
 const NORMATIVA = {
   cpeum: {
     nombre: 'Constitución Política de los Estados Unidos Mexicanos',
-    ref: 'Artículo 134',
-    uso: 'Administración de recursos públicos con eficiencia, eficacia, economía, transparencia y honradez.',
-    estado: 'pv'
+    ref: 'Artículos 4, párrafo cuarto (protección de la salud), y 134 (administración de recursos)',
+    uso: 'Derecho a la protección de la salud y administración de recursos públicos con eficiencia, eficacia, economía, transparencia y honradez.',
+    estado: 'sd'
   },
   loapf: {
     nombre: 'Ley Orgánica de la Administración Pública Federal',
-    ref: '',
-    uso: 'Naturaleza y organización de las dependencias y entidades que suscriben.',
-    estado: 'pv'
+    ref: 'Artículos 2, fracción I, 26 y 39 (Secretaría de Salud); 3, fracción I, y 45 (organismos descentralizados)',
+    uso: 'Naturaleza jurídica de las dependencias y organismos que suscriben.',
+    estado: 'sd'
   },
   lfep: {
     nombre: 'Ley Federal de las Entidades Paraestatales',
     ref: '',
-    uso: 'Naturaleza y representación de los organismos descentralizados.',
+    uso: 'Naturaleza y representación de los organismos descentralizados y empresas de participación estatal.',
     estado: 'pv'
   },
   lins: {
     nombre: 'Ley de los Institutos Nacionales de Salud',
-    ref: '',
+    ref: 'Artículo 5 (relación de Institutos Nacionales de Salud)',
     uso: 'Naturaleza y atribuciones de los Institutos Nacionales de Salud.',
-    estado: 'pv'
+    estado: 'sd'
   },
   lgs: {
     nombre: 'Ley General de Salud',
@@ -41,10 +41,17 @@ const NORMATIVA = {
   },
   riss: {
     nombre: 'Reglamento Interior de la Secretaría de Salud',
-    ref: 'Artículo 13 (atribuciones de la CCINSHAE)',
+    ref: 'Artículos 2, apartados A y B (unidades administrativas); 8; 13 (CCINSHAE); 21 (DGCOES)',
     uso: 'Competencia y facultades de las unidades administrativas que suscriben.',
     estado: 'sd',
     fecha: 'DOF 27-02-2025'
+  },
+  adscripcion: {
+    nombre: 'Acuerdo por el que se adscriben orgánicamente las unidades administrativas y órganos administrativos desconcentrados de la Secretaría de Salud',
+    ref: 'Artículo único',
+    uso: 'Adscripción orgánica de la unidad administrativa que suscribe.',
+    estado: 'sd',
+    fecha: 'DOF 27-03-2025'
   },
   lp: {
     nombre: 'Ley de Planeación',
@@ -58,6 +65,13 @@ const NORMATIVA = {
     uso: 'Confirmar que el instrumento es un convenio y no una contratación de bienes o servicios sujeta a esta ley.',
     estado: 'sd',
     fecha: 'DOF 16-04-2025'
+  },
+  rlaassp: {
+    nombre: 'Reglamento de la Ley de Adquisiciones, Arrendamientos y Servicios del Sector Público',
+    ref: 'Artículo 4, párrafo tercero (convenios de colaboración en materia de atención a la salud y cadena de suministro no sujetos a la Ley)',
+    uso: 'Exclusión de la LAASSP para convenios de colaboración entre dependencias y entidades en materia de salud.',
+    estado: 'sd',
+    fecha: 'DOF 18-12-2025; reforma DOF 27-03-2026'
   },
   lfprh: {
     nombre: 'Ley Federal de Presupuesto y Responsabilidad Hacendaria',
@@ -99,7 +113,7 @@ const NORMATIVA = {
     nombre: 'Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados',
     ref: '',
     uso: 'Tratamiento de datos personales derivado del convenio.',
-    estado: 'pv'
+    estado: 'sd'
   },
   lfda: {
     nombre: 'Ley Federal del Derecho de Autor',
@@ -123,8 +137,8 @@ const NORMATIVA = {
 
 // Normas que sustentan cada apartado del convenio.
 const FUNDAMENTO_SECCION = {
-  tipo: ['ccf', 'laassp'],
-  naturaleza: ['loapf', 'lfep', 'lins', 'riss'],
+  tipo: ['ccf', 'laassp', 'rlaassp'],
+  naturaleza: ['loapf', 'lfep', 'lins', 'riss', 'adscripcion'],
   facultades: ['riss', 'lfep'],
   objeto: ['ccf', 'lgs', 'laassp'],
   compromisos: ['ccf'],
@@ -139,6 +153,8 @@ const FUNDAMENTO_SECCION = {
   terminacion: ['ccf'],
   fortuito: ['ccf'],
   cesion: ['ccf'],
+  avisos: ['ccf'],
   controversias: ['ccf'],
+  anexos: ['ccf'],
   firmas: ['ccf', 'lgra']
 };

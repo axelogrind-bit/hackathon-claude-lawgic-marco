@@ -55,7 +55,13 @@ button, .boton { display: inline-block; font: inherit; font-size: 14px; padding:
 button.sec, .boton.sec { background: transparent; color: var(--texto); border-color: var(--borde); }
 button:disabled { opacity: .5; cursor: not-allowed; }
 .acciones { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
-#agregar-parte { margin: 0 0 14px; }
+details summary { cursor: pointer; font-size: 13px; color: var(--texto-2); margin: 0 0 10px; }
+.sugerencia { font-size: 13px; background: var(--ok-bg); color: var(--ok); border-radius: var(--radio); padding: 8px 12px; margin: 0 0 12px; }
+.sugerencia.distinto { background: var(--preventivo-bg); color: var(--preventivo); }
+.sugerencia p { margin: 0 0 6px; }
+.sugerencia ul { margin: 0 0 8px; padding: 0; list-style: none; font-size: 12px; }
+#cat-editor { max-width: 640px; }
+.celda-acciones { white-space: nowrap; }
 
 .vista { position: sticky; top: 12px; }
 .alertas { font-size: 13px; background: var(--relevante-bg); color: var(--relevante); border-radius: var(--radio); padding: 8px 12px; margin-bottom: 12px; }
@@ -64,12 +70,13 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .documento { background: #ffffff; color: #111111; border: 1px solid var(--borde); border-radius: var(--radio); padding: 40px 48px; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; text-align: justify; max-height: 75vh; overflow: auto; margin-bottom: 12px; }
 .documento h2 { font-size: 14px; text-align: center; margin: 22px 0 10px; }
 .documento p { margin: 0 0 10px; }
-.documento .proemio { font-weight: bold; }
+.documento .proemio, .documento .decl-h { font-weight: bold; }
+.documento .cl-t { margin: 16px 0 4px; }
 .documento .ph { background: #fff1a8; padding: 0 2px; }
-.documento table.firmas { width: 100%; margin-top: 30px; border-collapse: collapse; }
-.documento table.firmas td { width: 50%; text-align: center; vertical-align: top; padding: 40px 12px 10px; }
-.firma-por { font-weight: bold; }
-.firma-linea { border-top: 1px solid #111111; padding-top: 6px; }
+.documento .firmas { margin-top: 30px; }
+.documento .firma { text-align: center; margin: 0 0 36px; }
+.firma-por { font-weight: bold; margin-bottom: 44px !important; }
+.firma-linea { border-top: 1px solid #111111; padding-top: 6px; margin: 0 22% !important; }
 
 .fundamento { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
 .fund-item { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); padding: 10px 12px; }
@@ -100,7 +107,7 @@ tr.fila-ok td { color: var(--texto-2); }
 
 @media print {
   body { background: #ffffff; }
-  .barra, .formulario, .acciones, .alertas, .fundamento, .pie, .aviso, label.check, #tab-revisar, #tab-normas { display: none !important; }
+  .barra, .formulario, .acciones, .alertas, .fundamento, .pie, .aviso, label.check, #tab-catalogo, #tab-revisar, #tab-normas { display: none !important; }
   main { padding: 0; }
   .dos-columnas { display: block; }
   .vista { position: static; }
